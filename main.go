@@ -7,10 +7,14 @@ import (
 	"os"
 	"strings"
 
+	"fserver/models"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v2"
 )
+
+const DefaultPort = "3333"
 
 func main() {
 	rand.Seed(42)
@@ -18,8 +22,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var c Config
-	yaml.NewDecoder(f).Decode(&c)
+	var c models.Config
+	err = yaml.NewDecoder(f).Decode(&c)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println(c)
 
 	r := gin.Default()
@@ -27,20 +34,20 @@ func main() {
 		r.Use(cors.Default())
 	}
 	for url, route := range c.Routes {
-		func(url string, route Route) {
+		func(url string, route models.Route) {
 			method := strings.ToUpper(route.Method)
 			var content []byte
 			var contents [][]byte
 			switch route.Content.Type {
-			case ContentTypeInline:
+			case models.ContentTypeInline:
 				content = []byte(route.Content.Body)
-			case ContentTypeLink:
+			case models.ContentTypeLink:
 				content, err = ioutil.ReadFile(route.Content.Link)
 				if err != nil {
 					log.Println("cant load content file for route " + url)
 					log.Fatal(err)
 				}
-			case ContentTypeRandom:
+			case models.ContentTypeRandom:
 				// do something
 				for _, val := range route.Content.Random {
 					contents = append(contents, []byte(val.Body))
@@ -52,8 +59,8 @@ func main() {
 				for key, val := range route.Headers {
 					c.Header(key, val)
 				}
-				if route.Content.Type == ContentTypeRandom {
-					content = contents[rand.Intn(len(contents))]
+				if route.Content.Type == models.ContentTypeRandom {
+					content = getRandomContent(contents)
 				}
 
 				c.Writer.Write(content)
@@ -62,36 +69,13 @@ func main() {
 			})
 		}(url, route)
 	}
-	r.Run(":3333")
+	port := c.Port
+	if port == "" {
+		port = DefaultPort
+	}
+	r.Run(":" + port)
 }
 
-type Config struct {
-	CorsEnabled bool `yaml:"corsEnabled"`
-	Routes      map[string]Route
-}
-
-type Route struct {
-	Method  string
-	Content Content
-	Headers map[string]string
-}
-
-type ContentType string
-
-var (
-	ContentTypeInline ContentType = "inline"
-	ContentTypeLink   ContentType = "link"
-	ContentTypeRandom ContentType = "random"
-)
-
-type Content struct {
-	Type   ContentType
-	Body   string
-	Link   string
-	Random []RandomContent
-}
-
-type RandomContent struct {
-	Body string
-	Link string
+func getRandomContent(contents [][]byte) []byte {
+	return contents[rand.Intn(len(contents))]
 }
