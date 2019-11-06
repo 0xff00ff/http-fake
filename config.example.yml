@@ -1,0 +1,22 @@
+port: 3333
+corsEnabled: true
+routes:
+  /:
+    method: get
+    content: 
+      type: inline # can be 'inline'|'link'|'random'
+      body: '{"data": "hello world"}'
+      link: ./index.json 
+      random:
+        - body: '{"data": "hello world 1"}'
+        - body: '{"data": "hello world 2"}'
+        - body: '{"data": "hello world 3"}'
+        - body: '{"data": "hello world 4"}'
+  /error:
+    method: post
+    content: 
+      type: inline
+      body: '{"error": "something wrong"}'
+    headers:
+      authToken: "qweqweqwe"
+      content-type: application/json
