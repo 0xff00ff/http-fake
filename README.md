@@ -3,22 +3,23 @@ Starts fake configurable http server for development
 
 Simple http server which can be configured through file
 
-Config parameters:
+### Config parameters:
 - port: server port
 - corsEnabled: enable servers CORS
-- routes: [string]Route - map of routes 
+- routes: map[string][Route](#Route) - map of routes 
 
-Route:
+### Route:
 - method: http method
-- content: Content
+- content: [Content](#Content)
+- headers: map[string]string
 
-Content:
+### Content:
 - type: string
 - body: string
 - link: string
-- random: []RandomItem
+- random: [][RandomItem](#RandomItem)
 
-RandomItem
+### RandomItem:
 - body: string
 
 Config example:
