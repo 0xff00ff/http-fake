@@ -42,12 +42,9 @@ routes:
       type: file
       algorithm: random
       body: 
-        - './asset.json'
-        - './assetposition.json'
-        - './openconfiguration.json'
-    headers: # you can add headers
-      authToken: "qweqweqwe"
-      content-type: application/json
+        - './dog.json'
+        - './cat.json'
+        - './fish.json'
   
   /condition:
     method: post
@@ -57,15 +54,24 @@ routes:
       body:
         - source: body
           query: 'a[0]'
-          value: "qweqweqwe"
-          body: '{"asd": "zxc"}'
-  /condition/:condition-id:
+          value: "cat"
+          body: '{"type": "cat"}'
+        - source: body
+          query: 'a[0]'
+          value: "dog"
+          body: '{"type": "dog"}'
+
+  /condition/animal/:animal-type:
     method: get
     content:
       type: file
       algorithm: condition
       body:
         - source: path
-          query: 'condition-id'
-          value: "qweqweqwe"
-          body: 'asset.json'
+          query: 'animal-type'
+          value: "cat"
+          body: 'cat.json'
+        - source: path
+          query: 'animal-type'
+          value: "dog"
+          body: 'dog.json'

@@ -42,6 +42,9 @@ func (r ConditionBody) Write(c *gin.Context) error {
 	}
 	var body any
 	err = json.Unmarshal(b, &body)
+	if err != nil {
+		return err
+	}
 	log.Println("body is:", string(b))
 	for k, v := range r.data {
 		var val any
@@ -52,7 +55,6 @@ func (r ConditionBody) Write(c *gin.Context) error {
 		} else {
 			return fmt.Errorf("source %s on index %d not found", v.Source, k)
 		}
-		log.Printf("found %s, want %s", val, v.Value)
 		if val == v.Value {
 			b := r.preparer.ModyfyContent(v.Body)
 			c.Writer.Write(b)
