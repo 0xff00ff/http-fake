@@ -5,7 +5,7 @@ go 1.21.0
 toolchain go1.21.1
 
 require (
-	github.com/gin-contrib/cors v1.3.0
+	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/simonnilsson/ask v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
