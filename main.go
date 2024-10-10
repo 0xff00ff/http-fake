@@ -69,5 +69,8 @@ func main() {
 	if port == "" {
 		port = DefaultPort
 	}
-	r.Run(":" + port)
+	err = r.Run(":" + port)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
