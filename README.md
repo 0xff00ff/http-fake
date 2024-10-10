@@ -4,20 +4,24 @@ Starts fake configurable http server for development
 Simple http server which can be configured through file
 
 ### Config parameters:
-- port: server port
-- corsEnabled: enable servers CORS
-- routes: map[string][Route](#Route) - map of routes 
+- port:        string #server port
+- corsEnabled: bool #enable servers CORS
+- routes:      map[string][Route](#Route) - map of routes 
 
 ### Route:
-- method: http method
+- method:  string #http method
 - content: [Content](#Content)
-- headers: map[string]string
 
 ### Content:
-- type: string
-- body: string
-- link: string
-- random: [][RandomItem](#RandomItem)
+- type:     string # inline | file
+- algorithm string # static | random | condition
+- body:     any    # string | [ConditionalBody](#ConditionalBody)
+
+#### ConditionalBody:
+- query  string
+- value  string
+- body   string
+- source string
 
 ### RandomItem:
 - body: string
@@ -27,27 +31,78 @@ Config example:
 port: 3333
 corsEnabled: true
 routes:
-  /:
-    # route accept only http get method
-    method: get 
+
+  /inline:
+    method: get
     content: 
-      # response will be get from body property
       type: inline
       body: '{"data": "hello world"}'
-  /link: 
+
+  /link:
+    method: get
+    content: 
+      type: file 
+      body: ./asset.json
+
+  /random:
+    method: get
+    content: 
+      type: inline
+      algorithm: random
+      body:
+        - '{"data": "hello world 1"}'
+        - '{"data": "hello world 2"}'
+        - '{"data": "hello world 3"}'
+        - '{"data": "hello world 4"}'
+      
+  /random/:qwe:
+    method: get
+    content: 
+      type: inline
+      algorithm: random
+      body:
+        - '{"data": "hello world 1"}'
+        - '{"data": "hello world 2"}'
+        - '{"data": "hello world 3"}'
+        - '{"data": "hello world 4"}'
+
+  /random-file:
+    method: get
+    content: 
+      type: file
+      algorithm: random
+      body: 
+        - './dog.json'
+        - './cat.json'
+        - './fish.json'
+  
+  /condition:
     method: post
-    content: 
-      # response will be get from link property
-      # server will search file named './index.json' 
-      # and it's content will be send as response body
-      type: link
-      link: ./index.json 
-  /random: 
-    method: put
-    content: 
-      # response body will be get as random value from 'random' array
-      type: random
-      random:
-        - body: '{"data": "hello world 1"}'
-        - body: '{"data": "hello world 2"}'
+    content:
+      type: inline
+      algorithm: condition
+      body:
+        - source: body
+          query: 'a[0]'
+          value: "cat"
+          body: '{"type": "cat"}'
+        - source: body
+          query: 'a[0]'
+          value: "dog"
+          body: '{"type": "dog"}'
+
+  /condition/animal/:animal-type:
+    method: get
+    content:
+      type: file
+      algorithm: condition
+      body:
+        - source: path
+          query: 'animal-type'
+          value: "cat"
+          body: 'cat.json'
+        - source: path
+          query: 'animal-type'
+          value: "dog"
+          body: 'dog.json'
 ```
