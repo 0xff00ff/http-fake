@@ -1,0 +1,76 @@
+{
+  "port": 3333,
+  "corsEnabled": true,
+  "routes": {
+    "/inline": {
+      "method": "get",
+      "content": { 
+        "type": "inline",
+        "body": {"data": "hello world"}
+      }
+    },
+    "/link": {
+      "method": "get",
+      "content": {
+        "type": "file",
+        "body": "./asset.json"
+      }
+    },
+    "/random": {
+      "method": "get",
+      "content": { 
+        "type": "inline",
+        "algorithm": "random",
+        "body": [
+          {"data": "hello world 1"},
+          {"data": "hello world 2"},
+          {"data": "hello world 3"},
+          {"data": "hello world 4"}
+        ]
+      }
+    },
+    "/random/:qwe": {
+      "method": "get",
+      "content": { 
+        "type": "inline",
+        "algorithm": "random",
+        "body": [
+          {"data": "hello world 1"},
+          {"data": "hello world 2"},
+          {"data": "hello world 3"},
+          {"data": "hello world 4"}
+        ]
+      }
+    },
+
+    "/random-file": {
+      "method": "get",
+      "content": { 
+        "type": "file",
+        "algorithm": "random",
+        "body": [
+          "./asset.json",        
+          "./assetposition.json",
+          "./openconfiguration.json"
+        ],
+        "headers": {
+          "authToken": "qweqweqwe",
+          "content-type": "application/json"
+        }
+      }
+    },
+    "/condition": {
+      "method": "get",
+      "content": {
+        "type": "inline",
+        "algorithm": "condition",
+        "body": [
+          { "query": "a[0]",
+            "value": "qweqweqwe",
+            "body": {"asd": "zxc"}
+          }
+        ]
+      }
+    }
+  }
+}

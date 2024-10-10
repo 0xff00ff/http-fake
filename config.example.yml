@@ -1,22 +1,71 @@
 port: 3333
 corsEnabled: true
 routes:
-  /:
+
+  /inline:
     method: get
     content: 
-      type: inline # can be 'inline'|'link'|'random'
+      type: inline
       body: '{"data": "hello world"}'
-      link: ./index.json 
-      random:
-        - body: '{"data": "hello world 1"}'
-        - body: '{"data": "hello world 2"}'
-        - body: '{"data": "hello world 3"}'
-        - body: '{"data": "hello world 4"}'
-  /error:
-    method: post
+
+  /link:
+    method: get
+    content: 
+      type: file 
+      body: ./asset.json
+
+  /random:
+    method: get
     content: 
       type: inline
-      body: '{"error": "something wrong"}'
-    headers:
+      algorithm: random
+      body:
+        - '{"data": "hello world 1"}'
+        - '{"data": "hello world 2"}'
+        - '{"data": "hello world 3"}'
+        - '{"data": "hello world 4"}'
+      
+  /random/:qwe:
+    method: get
+    content: 
+      type: inline
+      algorithm: random
+      body:
+        - '{"data": "hello world 1"}'
+        - '{"data": "hello world 2"}'
+        - '{"data": "hello world 3"}'
+        - '{"data": "hello world 4"}'
+
+  /random-file:
+    method: get
+    content: 
+      type: file
+      algorithm: random
+      body: 
+        - './asset.json'
+        - './assetposition.json'
+        - './openconfiguration.json'
+    headers: # you can add headers
       authToken: "qweqweqwe"
       content-type: application/json
+  
+  /condition:
+    method: post
+    content:
+      type: inline
+      algorithm: condition
+      body:
+        - source: body
+          query: 'a[0]'
+          value: "qweqweqwe"
+          body: '{"asd": "zxc"}'
+  /condition/:condition-id:
+    method: get
+    content:
+      type: file
+      algorithm: condition
+      body:
+        - source: path
+          query: 'condition-id'
+          value: "qweqweqwe"
+          body: 'asset.json'
